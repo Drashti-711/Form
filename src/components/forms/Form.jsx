@@ -34,7 +34,26 @@ export const Form = () => {
     const plan = watch('plan');
     const numUsers = watch('numUsers', 1);
 
-    const handleNext = () => {
+    // Check validation before moving to the next step
+    const validateStep = async () => {
+        let fieldsToValidate = [];
+
+        if (activeStep === 0) {
+            fieldsToValidate = ['firstName', 'lastName', 'email', 'companyName', 'companyWebsite', 'companyPhone', 'zipCode'];
+        } else if (activeStep === 1) {
+            fieldsToValidate = ['empStrength'];
+        } else if (activeStep === 2) {
+            fieldsToValidate = ['planType', 'plan', 'numUsers', 'date'];
+        }
+
+        const isValid = await methods.trigger(fieldsToValidate);
+        return isValid;
+    };
+
+    const handleNext = async () => {
+        const isValid = await validateStep();
+        // console.log('isValid', isValid);
+        if (!isValid) return;
         dispatch(setActiveStep(activeStep + 1));
     };
 
